@@ -12,24 +12,24 @@
           <v-col
                   cols="12"
                   sm="8"
-                  md="4"
+                  md="3"
           >
-            <v-card class="elevation-12">
+            <v-card class="elevation-5">
               <v-sheet
                       width="100%"
                       height="200"
                       color="primary"
                       dark
                       tile
-                      class="text-center pt-8"
+                      class="text-center pt-8 heading"
               >
                 <img src="/logo.png" width="100px" />
-                <div class="title">BBB-全网门槛最低合约产品</div>
-                <div class="caption">低手续费、低合约单价<br />下载即用，操作简单</div>
+                <div class="title">BBB-首个去中心化数字资产合约产品</div>
+                <div class="caption">低手续费、透明公平<br />杠杆交易，规则简单</div>
               </v-sheet>
 
-              <v-card-text class="px-5 pb-0">
-                <v-form>
+              <v-card-text class="px-10 pb-0">
+                <v-form ref="form" @submit.prevent="createAccount" lazy-validation>
                   <v-text-field
                           :label="form_label.account_name"
                           v-model="name"
@@ -51,11 +51,10 @@
                     <v-icon slot="append" v-on:click="showPassword=!showPassword">mdi-eye-outline</v-icon>
                   </v-text-field>
                   <v-text-field
-                          id="password"
                           :label="form_label.pwdrpt"
                           name="passwordagain"
                           v-model="repeatpwd"
-                          :rules="repeatpwdRules"
+                          :rules="[value => !!value ? value === password || validation.pwd_unmatched : validation.pwd_repeat]"
                           :type="showPassword?'text':'password'"
                           clearable
                           required
@@ -64,17 +63,23 @@
                   </v-text-field>
 
                   <v-text-field
-                          id="captcha"
                           :label="form_label.captcha"
                           name="captcha"
                           type="text"
-                          :rules="validcodeRules"
+                          :rules="[v => !!v || validation.validcode_required ]"
                           required
                           clearable
-                  ></v-text-field>
+                  >
+                    <template slot="append" bottom>
+                      <a v-if="verifyCode" @click="refreshCaptcha()" class="captcha-field">
+                        <span v-html="verifyCode.data"/>
+                      </a>
+                    </template>
+                  </v-text-field>
 
                   <v-text-field
                           id="refer"
+                          v-model="referer"
                           :label="form_label.refer"
                           name="refer"
                           type="text"
@@ -83,7 +88,7 @@
 
                   <v-checkbox
                           v-model="warnForgot"
-                          :rules="[v => !!v || 'You must agree to continue!']"
+                          :rules="[v => !!v || validation.warn ]"
                           :label="form_label.agree"
                           required
                   ></v-checkbox>
@@ -93,13 +98,86 @@
               </v-card-text>
               <v-card-actions class="pa-5">
                 <v-spacer></v-spacer>
-                <v-btn color="primary" block dark v-text="form_label.register"></v-btn>
+                <v-btn
+                        :disabled = "!canCreate"
+                        color="primary"
+                        block
+                        v-text="form_label.register">
+                </v-btn>
               </v-card-actions>
             </v-card>
           </v-col>
+
+
+          <v-col
+                  cols="12"
+                  sm="8"
+                  md="4"
+                  class="text-center marketing justify-center align-center"
+          >
+            <v-row>
+
+              <v-col
+                      cols="12"
+                      md="5"
+              >
+                <div class="title mt-5">
+                  所有交易上链公开透明<br />
+                  杜绝人为操作价格
+                </div>
+              </v-col>
+
+              <v-col
+                      cols="12"
+                      md="7"
+              >
+
+                <v-sheet color="#FFF" tile>
+                  <img src="/chart.svg" />
+                </v-sheet>
+              </v-col>
+
+              <v-col
+                      cols="12"
+                      md="5"
+              >
+                <div class="title mt-5"> 不同杠杆产品<br />
+                  1USDT即可交易
+
+                </div>
+              </v-col>
+
+              <v-col
+                      cols="12"
+                      md="7"
+              >
+
+                <img src="/price.png" />
+              </v-col>
+
+              <v-col
+                      cols="12"
+                      md="5"
+              >
+                <div class="title mt-5">
+                  详尽指标展示<br />
+                  轻松掌握平仓时机
+                </div>
+              </v-col>
+
+              <v-col
+                      cols="12"
+                      md="7"
+              >
+
+                <img src="/chart.svg" />
+              </v-col>
+
+
+            </v-row>
+
+          </v-col>
         </v-row>
-
-
 
       </v-container>
     </v-content>
@@ -113,78 +191,141 @@
               no-gutters
       >
         <v-btn
-                v-for="link in links"
-                :key="link"
-                color="white"
+                v-for="item in links"
                 text
                 rounded
-                class="my-2"
+                class="my-2 "
+                dark
         >
-          {{ link }}
+          <a :href="item.taglink" class="white--text">{{item.title}}</a>
+
+
+        </v-btn>
+        <v-btn
+                rounded
+                class="my-2 "
+                dark
+                text
+                @click="activate()"
+        >
+          联系我们
         </v-btn>
       </v-row>
     </v-footer>
   </v-app>
 </template>
 
+<style>
+  .marketing img{
+    max-width: 100%;
+  }
+
+  a{
+    text-decoration: none;
+  }
+
+  .heading{
+    background: linear-gradient(0deg, #c62c43 0%, #f55e5d 100%);
+  }
+
+</style>
+
 <script>
   import { debounce } from "lodash";
+  import axios from "axios";
+  import PrivateKey from "../ecc/src/PrivateKey";
+
+  const config = {
+    faucet: 'http://uatfaucet.51nebula.com', //'https://faucet.cybex.io'
+    chain: 'http://18.136.140.223:38090'
+  }
+
+  let _keyCachePriv = {};
+  let _keyCachePub = {};
+
+  const validation = {
+    "validcode_required": "请输入验证码",
+    "pwd_too_short": "密码必须至少包含12位字符",
+    "pwd_number": "密码必须至少包含一个数字、大写字母、小写字母和特殊字符",
+    "pwd_number_simple": "密码必须至少包含一个数字、大写字母和小写字母",
+    "pwd_strength": "密码强度：%s",
+    "account_required": "请输入账户名",
+    "pwd_required": "请输入密码",
+    "pwd_unmatched": "两次输入的密码不一致",
+    "pwd_repeat": "请再次输入密码",
+    "account_not_exists": "账户名或密码错误",
+    "account_too_short": "账户名过短",
+    "account_too_long": "账户名过长",
+    "account_slash": "账户名必须至少包含一个数字或横杠",
+    "account_slash_limit": "账户名不能包含连续的横杠",
+    "account_alpha": "账户名必须以小写字母开始",
+    "account_number": "账户名必须以小写字母或数字结尾",
+    "account_no_sign": "账户名仅能包含小写字母、数字、横杠",
+    "not_enough_balance": "余额不足",
+    "pwd_wrong": "密码错误",
+    "warn":"必须同意方能继续",
+    "invalid_memo_XRP": "非法的TAG，请检查",
+    "account_exists": "账户名已存在",
+    "priKey_invalid": "没有权限"
+  }
 
   export default {
     props: {
       source: String,
     },
     data: () => ({
-      drawer:false,
+      validation: validation,
       form_label:{
         account_name: "用户名",
-        pwd:"密码",
+        pwd:"密码,至少12位長",
         pwdrpt:"确认密码",
         captcha: "验证码",
         refer:"推荐人",
         agree:"我确认已妥善备份即将创建的账户名称及其密码，并知晓一旦密码遗忘，将无法找回，也无法再次登陆账户或使用账户资金",
         register:"注册"
       },
+      message: "",
+      verifyCode: {},
       isAccountChecked: false,
       isAccountValid: false,
       isAccountNew: false,
-      warnForgot: false,
+      showCopied: false,
       showPassword: false,
+      useGenerated: false,
+      warnForgot: false,
+      pwdStrength: 1,
       generated: "",
       name: "",
       password: "",
       repeatpwd: "",
       captcha: "",
+      referer:"",
+
       nameRules: [
-        // value =>
-        //         !this.isAccountValid ||
-        //         !!value ||
-        //         this.$t("validation.account_required"),
-        // value => this.checkName(value)
+        value => !!value || validation.account_required,
+        value => this.checkName(value)
       ],
       passwordRules: [
-        // value => this.checkPassword(value) || this.$t("validation.pwd_length")
-      ],
-      repeatpwdRules: [
-        // value =>
-        //         !this.isAccountValid ||
-        //         (!!value
-        //                 ? value === this.password || this.$t("validation.pwd_unmatched")
-        //                 : this.$t("validation.pwd_repeat"))
+        value => !!value || validation.pwd_required,
+        value => value.length >= 12 || validation.pwd_too_short,
+        value => (/[0-9]{1,}/g.test(value) && /[a-z]{1,}/g.test(value) && /[A-Z]{1,}/g.test(value)) || validation.pwd_number_simple
       ],
       validcodeRules: [
-        // value =>
-        //         !this.isAccountValid ||
-        //         (!!value || this.$t("validation.validcode_required"))
+        value => !!value || validation.validcode_required
       ],
       inRegister: false,
       links: [
-        '赛贝交易所',
-        '联系我们',
-        '帮助与反馈',
+              {
+              title:'帮助与反馈', taglink:'https://bbb2019.zendesk.com/hc/zh-cn',
+              },{
+              title:'联系我们', taglink:'https://bbb2019.zendesk.com/hc/zh-cn',
+              }
       ],
     }),
     methods: {
+      activate(){
+        zE.activate();
+      },
       onPasswordChanged() {
         this.$refs.form.validate();
       },
@@ -193,10 +334,13 @@
         this.isAccountChecked = false;
         this.name = (this.name || "").slice(0, 64);
         try {
-          this.isAccountNew = !(await this.$call(
-                  this.cybexjs.get_user,
-                  this.name
-          ));
+          const data = {"method": "call", "params": [0, 'get_full_accounts', [this.name]], "id": 1};
+          const result = await axios.post(config.chain, data);
+          console.log(result);
+
+          if(result.data.length === 0){
+            this.isAccountNew = true;
+          }
           this.isAccountChecked = true;
           this.$refs.form.validate();
         } catch (e) {
@@ -205,111 +349,13 @@
           this.$refs.form.validate();
         }
       }, 200),
-      checkPassword(value, returnBool) {
-        if (!this.isAccountValid) {
-          return true;
-        }
-        const checkLen = this.isCloudMode ? 12 : 8;
-        if (!this.checkPasswordLength(value, checkLen)) {
-          return returnBool ? false : this.$t("validation.pwd_too_short", {len: checkLen});
-        }
-        const validReg = this.isCloudMode ? this.checkPasswordComplex(value) : this.checkPasswordComplexSimpler(value);
-        const invalidRegStr = this.isCloudMode ? this.$t("validation.pwd_number") : this.$t("validation.pwd_number_simple");
-        if (!validReg) {
-          return returnBool ? false : invalidRegStr;
-        }
-        if (!/^[ -~]+$/g.test(value)) {
-          return returnBool ? false : this.$t("validation.pwd_wrong");
-        }
-        return true;
-      },
-      // async createAccount() {
-      //   const failDeal = () => {
-      //     ga("send", {
-      //       hitType: "event",
-      //       eventCategory: "unique",
-      //       eventAction: "REGISTER_FAILED",
-      //       eventLabel: this.name
-      //     });
-      //     try {
-      //       (window._czc|| []).push(["_trackEvent", "unique", "REGISTER_FAILED", this.name]);
-      //     } catch (e) {
-      //       console.log(e)
-      //     }
-      //     this.captcha = "";
-      //     this.refreshCaptch(true);
-      //   };
-      //   if (this.$refs.form.validate()) {
-      //     let isReg = false;
-      //     this.inRegister = true;
-      //     await this.$eventHandle(async () => {
-      //       this.$store
-      //               .dispatch("auth/register", {
-      //                 mode: this.registerMode,
-      //                 username: this.name,
-      //                 password: this.password,
-      //                 codeId: this.verifyCode.id,
-      //                 code: this.captcha
-      //               })
-      //               .then(res => {
-      //                 if (res) {
-      //                   if (this.isCloudMode) {
-      //                     try {
-      //                       ga("send", {
-      //                         hitType: "event",
-      //                         eventCategory: "unique",
-      //                         eventAction: "REGISTER_DONE:CLOUD",
-      //                         eventLabel: this.name
-      //                       });
-      //                       (window._czc|| []).push(["_trackEvent", "unique", "REGISTER_DONE:CLOUD", this.name]);
-      //                       ga("send", {
-      //                         hitType: "event",
-      //                         eventCategory: "unique",
-      //                         eventAction: "LOGIN_DONE:CLOUD",
-      //                         eventLabel: this.name
-      //                       });
-      //                       (window._czc|| []).push(["_trackEvent", "unique", "LOGIN_DONE:CLOUD", this.name]);
-      //                     } catch (e) {
-      //                       console.log(e)
-      //                     }
-      //                     this.$i18n.jumpTo("/register/guide");
-      //                   } else {
-      //                     try {
-      //                       ga("send", {
-      //                         hitType: "event",
-      //                         eventCategory: "unique",
-      //                         eventAction: "REGISTER_DONE:BIN",
-      //                         eventLabel: this.name
-      //                       });
-      //                       (window._czc|| []).push(["_trackEvent", "unique", "REGISTER_DONE:BIN", this.name]);
-      //                     } catch (e) {
-      //                       console.log(e)
-      //                     }
-      //                     this.$router.push(
-      //                             this.$i18n.path("/settings/backup?register=true")
-      //                     );
-      //                   }
-      //                 } else {
-      //                   failDeal();
-      //                 }
-      //               })
-      //               .catch(e => {
-      //                 console.error(e);
-      //                 failDeal();
-      //               })
-      //               .finally(() => {
-      //                 this.inRegister = false;
-      //               });
-      //     });
-      //   }
-      // },
       checkName(value, returnBool) {
         let msg = "";
         if (/([^a-z0-9\-])/g.test(value)) {
-          msg = this.$t("validation.account_no_sign");
+          msg = validation.account_no_sign;
         }
         if (!/^([a-z])/g.test(value)) {
-          msg = this.$t("validation.account_alpha");
+          msg = validation.account_alpha;
         }
         if (
                 !value ||
@@ -317,22 +363,22 @@
                 (value && value.length > 64)
         ) {
           if (value && value.length > 64) {
-            msg = this.$t("validation.account_too_long");
+            msg = validation.account_too_long;
           } else {
-            msg = this.$t("validation.account_too_short");
+            msg = validation.account_too_short;
           }
         }
         if (!/[0-9\-]+.*$/g.test(value)) {
-          msg = this.$t("validation.account_slash");
+          msg = validation.account_slash;
         }
         if (!/^((?!\-\-).)*$/g.test(value)) {
-          msg = this.$t("validation.account_slash_limit");
+          msg = validation.account_slash_limit;
         }
         if (!/([a-z0-9])$/g.test(value)) {
-          msg = this.$t("validation.account_number");
+          msg = validation.account_number;
         }
         if (this.isAccountChecked && !this.isAccountNew) {
-          msg = this.$t("validation.account_exists");
+          msg = validation.account_exists;
         }
         if (msg) {
           this.isAccountValid = false;
@@ -342,17 +388,109 @@
         }
         return true;
       },
-      async refreshCaptch() {
+      async refreshCaptcha() {
         if (this.autoRefresh) {
           clearTimeout(this.autoRefresh);
           this.autoRefresh = null;
         }
         this.autoRefresh = setTimeout(() => {
-          this.refreshCaptch();
+          this.refreshCaptcha();
         }, 1.5 * 60 * 1000);
-        let s = await this.$callmsg(this.cybexjs.verify_code);
+        let s = await this.verify_code();
         this.verifyCode = s;
+      },
+      async verify_code() {
+        if (!navigator.onLine) {
+          throw new Error(`UN.network.verify_code`)
+        }
+        try {
+          let hr = await axios.get(`${config.faucet}/captcha`);
+          if (hr.status === 200 && hr.data.id && hr.data.data) {
+            return hr.data
+          } else {
+            // console.error(hr.data)
+            throw new Error(`S.faucet.verify_code`)
+
+          }
+        } catch (e) {
+          // console.error(e)
+          throw new Error(`S.faucet.verify_code`)
+        }
+      },
+      generateKeys(accountName, password, roles, prefix) {
+        if (!accountName || !password) {
+          throw new Error("Account name or password required");
+        }
+        if (password.length < 12) {
+          throw new Error("Password must have at least 12 characters");
+        }
+        // let privKeys = {};
+        let pubKeys = {};
+
+        (roles || ["active", "owner", "memo"]).forEach(role => {
+          let seed = accountName + role + password;
+          let pkey = _keyCachePriv[seed] ? _keyCachePriv[seed] : PrivateKey.fromSeed(seed);
+          _keyCachePriv[seed] = pkey;
+          // console.log(role,seed,pkey.toWif(),pkey.toHex())
+          // privKeys[role] = pkey;
+          pubKeys[role] = _keyCachePub[seed] ? _keyCachePub[seed] : pkey.toPublicKey().toString(prefix);
+
+          _keyCachePub[seed] = pubKeys[role];
+        });
+        return pubKeys
+      },
+      async register() {
+        let pubKeys = this.generateKeys(this.name, this.password)
+        let result;
+        try {
+          result = await axios.post(`${config.faucet}/register`, {
+            "cap": {
+              "id": this.verifyCode.id,
+              "captcha": this.captcha
+            },
+            "account": {
+              "name": this.name,
+              "owner_key": pubKeys.active,
+              "active_key": pubKeys.owner,
+              "memo_key": pubKeys.owner,
+              "refcode": this.refcode,
+              "referrer": this.referrer
+            }
+          });
+        } catch (e) {
+          if (e.response.data) {
+            throw new Error(e.response.data)
+          }
+        }
+        if (result.status === 200) {
+          return result.data
+        } else {
+          throw new Error("S.faucet.register")
+        }
       }
     },
+    computed: {
+      canCreate() {
+        return (
+                this.checkName(this.name, true) &&
+                this.checkPassword(this.password, true) &&
+                this.name &&
+                this.isAccountChecked &&
+                this.isAccountValid &&
+                this.password &&
+                this.password === this.repeatpwd &&
+                this.captcha &&
+                this.repeatpwd &&
+                this.warnForgot
+        );
+        // return this.warnForgot && this.warnNoRestore && this.warnBackup
+      }
+    },
+    async mounted() {
+      const url_string = window.location.href;
+      const url = new URL(url_string);
+      this.referer = url.searchParams.get("id");
+      await this.refreshCaptcha();
+    }
   }
 </script>

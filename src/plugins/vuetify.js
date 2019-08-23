@@ -14,6 +14,9 @@ export default new Vuetify({
         secondary: colors.red.darken2, // #FFCDD2
         accent: colors.red.lighten1, // #3F51B5
       },
+      dark:{
+        primary: "#c62c43", // #c62c43
+      }
     },
   },
   icons: {

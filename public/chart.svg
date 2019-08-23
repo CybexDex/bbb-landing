@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="335" height="259" viewBox="0 0 335 259">
+    <defs>
+        <linearGradient id="a" x1="50%" x2="50%" y1="100%" y2="0%">
+            <stop offset="0%" stop-color="#FFF" stop-opacity=".2"/>
+            <stop offset="100%" stop-color="#C9D6FF" stop-opacity=".8"/>
+        </linearGradient>
+    </defs>
+    <g fill="none" fill-rule="evenodd">
+        <g fill-rule="nonzero" stroke-linecap="round" stroke-linejoin="round" stroke-width=".5">
+            <path stroke="#EAEAEA" stroke-dasharray="2,2" d="M0 20h344M0 60h344M0 100h344M0 140h344M0 180h344M0 220h344"/>
+            <path stroke="#C9C9C9" d="M0 240h344"/>
+        </g>
+        <g fill-rule="nonzero" stroke="#EAEAEA" stroke-dasharray="2" stroke-linecap="round" stroke-linejoin="round" stroke-width=".5">
+            <path d="M17.5 0v240M67.5 0v240M117.5 0v240M167.5 0v240M217.5 0v240M267.5 0v240M317.5 0v240"/>
+        </g>
+        <g fill="#CCC" font-family="PingFangSC-Regular, PingFang SC" font-size="10">
+            <text transform="translate(4 249)">
+                <tspan x="1.955" y="10.48">12:00</tspan>
+            </text>
+            <text transform="translate(4 249)">
+                <tspan x="51.955" y="10.48">12:05</tspan>
+            </text>
+            <text transform="translate(4 249)">
+                <tspan x="101.95" y="10.48">12:10</tspan>
+            </text>
+            <text transform="translate(4 249)">
+                <tspan x="151.95" y="10.48">12:15</tspan>
+            </text>
+            <text transform="translate(4 249)">
+                <tspan x="201.955" y="10.48">12:20</tspan>
+            </text>
+            <text transform="translate(4 249)">
+                <tspan x="250.955" y="10.48">12:25</tspan>
+            </text>
+            <text transform="translate(4 249)">
+                <tspan x="301.955" y="10.48">12:30</tspan>
+            </text>
+        </g>
+        <g fill="#CCC" font-family="PingFangSC-Regular, PingFang SC" font-size="10">
+            <text transform="translate(294 14)">
+                <tspan x="2.64" y="210.48">2000.0</tspan>
+            </text>
+            <text transform="translate(294 14)">
+                <tspan x="4.63" y="170.48">2010.0</tspan>
+            </text>
+            <text transform="translate(294 14)">
+                <tspan x="2.64" y="130.48">2020.0</tspan>
+            </text>
+            <text transform="translate(294 14)">
+                <tspan x="2.64" y="90.48">2030.0</tspan>
+            </text>
+            <text transform="translate(294 14)">
+                <tspan x="2.64" y="50.48">2040.0</tspan>
+            </text>
+            <text transform="translate(294 14)">
+                <tspan x="2.64" y="10.48">2050.0</tspan>
+            </text>
+        </g>
+        <path fill="url(#a)" d="M16.034 20.765l6.93 32.451a80.119 80.119 0 0 0 6.644 19.001 3.816 3.816 0 0 0 7.105-.731L42.3 50.243a3.88 3.88 0 0 1 5.91-2.239 3.637 3.637 0 0 0 5.589-2.312l3.46-17.36a4.024 4.024 0 0 1 7.928.195l4.033 27.135a29.95 29.95 0 0 0 5.636 13.529 3.264 3.264 0 0 0 5.83-1.391l3.47-19.796a4.376 4.376 0 0 1 8.643.144l3.76 26.624a18.914 18.914 0 0 0 5.697 11.065 3.495 3.495 0 0 0 5.856-1.96l6.919-41.656a3.29 3.29 0 0 1 5.575-1.783 57.167 57.167 0 0 1 7.932 9.97l3.479 5.543a100 100 0 0 1 3.153 5.392l3.032 5.578a4.32 4.32 0 0 0 7.842-.551l2.646-7.08a97.003 97.003 0 0 1 7.612-15.825 58.18 58.18 0 0 0 6.604-16.134l6.002-24.72a3.38 3.38 0 0 1 5.744-1.519 26.353 26.353 0 0 1 6.06 10.513l7.263 24.293.024 130.012c0 2.208-1.79 4-3.999 4.002l-164 .086c-2.21.004-4-1.786-4.002-3.995 0-.001 0-.002.003-.003l.033-145.235z" transform="translate(-16 71)"/>
+        <path stroke="#2E62EC" stroke-linecap="round" stroke-linejoin="round" d="M0 91.828l6.589 30.925c1.628 7.642 3.998 14.65 6.99 20.668 1.726 3.472 4.625 3.66 6.474.419.405-.71.739-1.553.984-2.487l4.5-17.151c1.21-4.613 4.07-6.79 6.65-5.06 2.51 1.683 5.275-.73 6.208-5.42l2.845-14.307c.813-4.088 3.237-6.165 5.414-4.639 1.262.884 2.221 2.848 2.583 5.284l3.587 24.196c.965 6.51 3.09 12.203 6.018 16.13 1.838 2.465 4.392 1.665 5.704-1.785.24-.632.429-1.329.558-2.067l3.042-17.392c.782-4.468 3.344-6.9 5.724-5.433 1.459.9 2.576 3.125 2.969 5.913l3.265 23.179c.871 6.187 3.108 11.381 6.147 14.277 2.23 2.124 4.953.453 6.084-3.731.115-.425.21-.867.286-1.321l5.935-35.818c.696-4.2 3.073-6.544 5.31-5.238.256.15.505.346.742.585 3.01 3.026 5.838 6.646 8.437 10.8l3.275 5.23a84.195 84.195 0 0 1 2.643 4.536l3.248 5.989c2.116 3.903 5.517 3.845 7.596-.129.208-.397.398-.826.568-1.283l2.074-5.562c2.22-5.953 4.799-11.403 7.686-16.243l.18-.304c2.986-5.003 5.383-11.119 7.039-17.957l5.01-20.684c1.027-4.243 3.692-6.118 5.951-4.189.122.104.241.218.358.342 2.796 2.978 5.105 7.336 6.676 12.603L172 107.002"/>
+        <g transform="translate(-16 99)">
+            <path fill-rule="nonzero" stroke="#2E6DEC" stroke-linecap="round" stroke-linejoin="round" stroke-width=".5" d="M0 8h208"/>
+            <circle cx="188" cy="8" r="2.5" fill="#FFF" fill-rule="nonzero" stroke="#2E42EC"/>
+            <g transform="translate(201)">
+                <rect width="56" height="16" fill="#4369DB" fill-rule="nonzero" rx="2"/>
+                <text fill="#FFF" font-family="PingFangSC-Regular, PingFang SC" font-size="11">
+                    <tspan x="9.256" y="13.528">2028.5</tspan>
+                </text>
+            </g>
+        </g>
+        <g>
+            <path fill-rule="nonzero" stroke="#168340" stroke-linecap="round" stroke-linejoin="round" stroke-width=".5" d="M-18 197h375"/>
+            <g transform="translate(281 189)">
+                <rect width="55.5" height="15.5" x=".25" y=".25" fill="#E5F9ED" fill-rule="nonzero" stroke="#168340" stroke-width=".5" rx="2"/>
+                <text fill="#666" font-family="PingFangSC-Regular, PingFang SC" font-size="11">
+                    <tspan x="9.547" y="13.528">2006.7</tspan>
+                </text>
+            </g>
+            <g>
+                <path fill-rule="nonzero" stroke="#C62C40" stroke-linecap="round" stroke-linejoin="round" stroke-width=".5" d="M-18 37h375"/>
+                <g transform="translate(281 29)">
+                    <rect width="55.5" height="15.5" x=".25" y=".25" fill="#FEEAE5" fill-rule="nonzero" stroke="#C62C40" stroke-width=".5" rx="2"/>
+                    <text fill="#666" font-family="PingFangSC-Regular, PingFang SC" font-size="11">
+                        <tspan x="9.547" y="13.528">2047.4</tspan>
+                    </text>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
