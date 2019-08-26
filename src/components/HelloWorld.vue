@@ -29,10 +29,11 @@
               </v-sheet>
 
               <v-card-text class="px-10 pb-0">
-                <v-form ref="form" @submit.prevent="createAccount" lazy-validation>
+                <v-form ref="form" @submit.prevent="createAccount" lazy-validation v-model="isAccountValid">
                   <v-text-field
                           :label="form_label.account_name"
                           v-model="name"
+                          :rules="nameRules"
                           required
                           clearable
                           type="text"
@@ -44,7 +45,7 @@
                           :label="form_label.pwd"
                           :rules="passwordRules"
                           :type="showPassword?'text':'password'"
-                          @input="onPasswordChanged"
+
                           clearable
                           required
                   >
@@ -99,9 +100,10 @@
               <v-card-actions class="pa-5">
                 <v-spacer></v-spacer>
                 <v-btn
-                        :disabled = "!canCreate"
+                        :disabled = "!isAccountValid"
                         color="primary"
                         block
+                        @click="createAccount"
                         v-text="form_label.register">
                 </v-btn>
               </v-card-actions>
@@ -191,16 +193,24 @@
               no-gutters
       >
         <v-btn
-                v-for="item in links"
-                text
                 rounded
                 class="my-2 "
                 dark
+                text
         >
-          <a :href="item.taglink" class="white--text">{{item.title}}</a>
+          <a href="https://cybex.io" target="_blank" class="white--text">Cybex</a>
+        </v-btn>
 
+        <v-btn
+                rounded
+                class="my-2 "
+                dark
+                text
+        >
+          <a href="https://bbb2019.zendesk.com/hc/zh-cn" target="_blank" class="white--text">帮助与反馈</a>
 
         </v-btn>
+
         <v-btn
                 rounded
                 class="my-2 "
@@ -301,10 +311,16 @@
       captcha: "",
       referer:"",
 
-      nameRules: [
-        value => !!value || validation.account_required,
-        value => this.checkName(value)
-      ],
+      // nameRules: [
+      //   value => !!value || validation.account_required,
+      //   value => (!/([^a-z0-9\-])/g.test(value)) || validation.account_no_sign,
+      //   value => (/^([a-z])/g.test(value))|| validation.account_alpha,
+      //   value => value.length > 3|| validation.account_too_short,
+      //   value => value.length < 31|| validation.account_too_long,
+      //   value => (/[0-9\-]+.*$/g.test(value)) || validation.account_slash,
+      //   value => (/^((?!\-\-).)*$/g.test(value)) || validation.account_slash_limit,
+      //   value => (/([a-z0-9])$/g.test(value)) || validation.account_number
+      // ],
       passwordRules: [
         value => !!value || validation.pwd_required,
         value => value.length >= 12 || validation.pwd_too_short,
@@ -314,80 +330,58 @@
         value => !!value || validation.validcode_required
       ],
       inRegister: false,
-      links: [
-              {
-              title:'帮助与反馈', taglink:'https://bbb2019.zendesk.com/hc/zh-cn',
-              },{
-              title:'联系我们', taglink:'https://bbb2019.zendesk.com/hc/zh-cn',
-              }
-      ],
     }),
     methods: {
       activate(){
         zE.activate();
       },
-      onPasswordChanged() {
-        this.$refs.form.validate();
-      },
+      // onPasswordChanged() {
+      //   this.$refs.form.validate();
+      // },
       onAccountNameChanged: debounce(async function() {
         if (!this.name) return;
         this.isAccountChecked = false;
         this.name = (this.name || "").slice(0, 64);
         try {
-          const data = {"method": "call", "params": [0, 'get_full_accounts', [this.name]], "id": 1};
-          const result = await axios.post(config.chain, data);
-          console.log(result);
-
-          if(result.data.length === 0){
-            this.isAccountNew = true;
-          }
+          // const data = {"method": "call", "params": [0, 'get_full_accounts', [this.name]], "id": 1};
+          // const result = await axios.post(config.chain, data);
+          // console.log(result);
+          //
+          // if(result.data.length === 0){
+          //   this.isAccountNew = true;
+          // }
+          this.isAccountNew = true;
           this.isAccountChecked = true;
-          this.$refs.form.validate();
+          // this.$refs.form.validate();
         } catch (e) {
           this.isAccountNew = true;
           this.isAccountChecked = true;
-          this.$refs.form.validate();
+          // this.$refs.form.validate();
         }
       }, 200),
-      checkName(value, returnBool) {
-        let msg = "";
-        if (/([^a-z0-9\-])/g.test(value)) {
-          msg = validation.account_no_sign;
-        }
-        if (!/^([a-z])/g.test(value)) {
-          msg = validation.account_alpha;
-        }
-        if (
-                !value ||
-                (value && value.length < 3) ||
-                (value && value.length > 64)
-        ) {
-          if (value && value.length > 64) {
-            msg = validation.account_too_long;
-          } else {
-            msg = validation.account_too_short;
-          }
-        }
-        if (!/[0-9\-]+.*$/g.test(value)) {
-          msg = validation.account_slash;
-        }
-        if (!/^((?!\-\-).)*$/g.test(value)) {
-          msg = validation.account_slash_limit;
-        }
-        if (!/([a-z0-9])$/g.test(value)) {
-          msg = validation.account_number;
-        }
-        if (this.isAccountChecked && !this.isAccountNew) {
-          msg = validation.account_exists;
-        }
-        if (msg) {
-          this.isAccountValid = false;
-          return returnBool ? false : msg;
-        } else {
-          this.isAccountValid = this.isAccountNew;
-        }
-        return true;
-      },
+      // checkName(value, returnBool) {
+      //   let msg;
+      //   let valid = true;
+      //   this.nameRules.forEach(rule=>{
+      //     msg =  rule(value);
+      //     if(msg !== true)
+      //       valid = false;
+      //   });
+      //   if (returnBool){
+      //     return !!msg;
+      //   }
+      //   return msg;
+      // },
+      // checkPassword(value, returnBool){
+      //   let msg;
+      //   this.passwordRules.forEach(rule=>{
+      //     msg = rule(value)
+      //   })
+      //   if (returnBool){
+      //     return !!msg;
+      //   }
+      //   return true;
+      // },
       async refreshCaptcha() {
         if (this.autoRefresh) {
           clearTimeout(this.autoRefresh);
@@ -439,7 +433,7 @@
         });
         return pubKeys
       },
-      async register() {
+      async createAccount() {
         let pubKeys = this.generateKeys(this.name, this.password)
         let result;
         try {
@@ -470,20 +464,18 @@
       }
     },
     computed: {
-      canCreate() {
-        return (
-                this.checkName(this.name, true) &&
-                this.checkPassword(this.password, true) &&
-                this.name &&
-                this.isAccountChecked &&
-                this.isAccountValid &&
-                this.password &&
-                this.password === this.repeatpwd &&
-                this.captcha &&
-                this.repeatpwd &&
-                this.warnForgot
-        );
-        // return this.warnForgot && this.warnNoRestore && this.warnBackup
+      nameRules(){
+        return [
+          value => !!value || validation.account_required,
+          value => (!/([^a-z0-9\-])/g.test(value)) || validation.account_no_sign,
+          value => (/^([a-z])/g.test(value))|| validation.account_alpha,
+          value => value.length > 3|| validation.account_too_short,
+          value => value.length < 31|| validation.account_too_long,
+          value => (/[0-9\-]+.*$/g.test(value)) || validation.account_slash,
+          value => (/^((?!\-\-).)*$/g.test(value)) || validation.account_slash_limit,
+          value => (/([a-z0-9])$/g.test(value)) || validation.account_number,
+          value=> (this.isAccountChecked && this.isAccountNew) || validation.account_exists
+        ]
       }
     },
     async mounted() {
@@ -494,3 +486,4 @@
     }
   }
 </script>
+
