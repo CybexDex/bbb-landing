@@ -7,6 +7,7 @@ const { encode, decode } = require('bs58');
 const { sha256, sha512, ripemd160 } = require('./hash');
 const deepEqual = require("deep-equal");
 const assert = require("assert");
+const ByteBuffer = require('bytebuffer');
 
 const secp256k1 = getCurveByName('secp256k1');
 const {G, n} = secp256k1;

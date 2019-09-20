@@ -100,7 +100,7 @@
               <v-card-actions class="pa-5">
                 <v-spacer></v-spacer>
                 <v-btn
-                        :disabled = "!isAccountValid"
+                        :disabled = !isAccountValid
                         color="primary"
                         block
                         @click="createAccount"
@@ -255,7 +255,7 @@
 
   const validation = {
     "validcode_required": "请输入验证码",
-    "pwd_too_short": "密码必须至少包含12位字符",
+    "pwd_too_short": "密码必须至少包含12位字符,且包含一个数字、大写字母、小写字母和特殊字符",
     "pwd_number": "密码必须至少包含一个数字、大写字母、小写字母和特殊字符",
     "pwd_number_simple": "密码必须至少包含一个数字、大写字母和小写字母",
     "pwd_strength": "密码强度：%s",
@@ -324,7 +324,7 @@
       passwordRules: [
         value => !!value || validation.pwd_required,
         value => value.length >= 12 || validation.pwd_too_short,
-        value => (/[0-9]{1,}/g.test(value) && /[a-z]{1,}/g.test(value) && /[A-Z]{1,}/g.test(value)) || validation.pwd_number_simple
+        value => (/[a-z0-9]{1,}/g.test(value) && /[a-z]{1,}/g.test(value) && /[A-Z]{1,}/g.test(value) &&  /[`~!@#$%^&*()_+<>?:"{},.\/;'[\]]{1,}/g.test(value)) || validation.pwd_number
       ],
       validcodeRules: [
         value => !!value || validation.validcode_required
@@ -382,6 +382,7 @@
       //   }
       //   return true;
       // },
+
       async refreshCaptcha() {
         if (this.autoRefresh) {
           clearTimeout(this.autoRefresh);
@@ -393,6 +394,7 @@
         let s = await this.verify_code();
         this.verifyCode = s;
       },
+
       async verify_code() {
         if (!navigator.onLine) {
           throw new Error(`UN.network.verify_code`)

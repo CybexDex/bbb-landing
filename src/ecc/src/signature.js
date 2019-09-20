@@ -5,6 +5,7 @@ const {getCurveByName} = require('ecurve');
 const assert = require("assert");
 const BigInteger = require('bigi');
 const PublicKey = require('./PublicKey');
+const ByteBuffer = require('bytebuffer');
 
 var secp256k1 = getCurveByName('secp256k1');
 
