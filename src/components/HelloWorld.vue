@@ -5,6 +5,9 @@
               class="fill-height"
               fluid
       >
+
+        <v-col>
+        
         <v-row
                 align="center"
                 justify="center"
@@ -165,12 +168,6 @@
                   详尽指标展示<br />
                   轻松掌握平仓时机
                 </div>
-                <div v-if="this.isMobile() === false">
-                  <qrcode-vue :value="qrValue" :size="qrSize" level="H" class="qr"></qrcode-vue>
-                  <p><b>扫描二维码下载APP</b></p>
-                </div>
-                <div>
-                </div>
               </v-col>
 
               <v-col
@@ -179,24 +176,51 @@
               >
 
                 <img src="/chart.svg" />
-                <div v-if="this.isMobile() === true">
-                  <qrcode-vue :value="qrValue" :size="qrSize" level="H" class="qr-mobile"></qrcode-vue>
+                <div v-if="this.isMobile() === true" class="qr-area">
+                  <div>
+                    <qrcode-vue :value="downloadLink" :size="qrSize" level="H" class="qr-mobile"></qrcode-vue>
+                    <span>Android</span>
+                  </div>
+                  <div>
+                    <qrcode-vue :value="tutorial" :size="qrSize" level="H" class="qr-mobile"></qrcode-vue>
+                    <span>iOS</span>  
+                  </div>
                   <p><b>识别二维码下载APP</b></p>
                 </div>
+
               </v-col>
-
-
             </v-row>
-
           </v-col>
         </v-row>
+        
+        
+        
+          <v-row 
+            align="center"
+            justify="center"
+            >
+            <div v-if="this.isMobile() === false" class="qr-area">
+                  <div class="single-qr">
+                    <qrcode-vue :value="downloadLink" :size="qrSize" level="H" class="qr-mobile"></qrcode-vue>
+                    <span>Android</span>
+                  </div>
+                  <div class="single-qr">
+                    <qrcode-vue :value="tutorial" :size="qrSize" level="H" class="qr-mobile"></qrcode-vue>
+                    <span>iOS</span>  
+                  </div>
+                </div>
+            <p class="qr-hint" v-if="this.isMobile() === false"><b>扫描二维码下载APP</b></p>    
+          </v-row>
 
+        </v-col>
+        
       </v-container>
     </v-content>
 
     <v-footer
             color="primary"
             padless
+            class="footer"
     >
       <v-row
               justify="center"
@@ -244,6 +268,10 @@
     text-decoration: none;
   }
 
+  footer{
+    margin-top:20px
+  }
+
   .heading{
     background: linear-gradient(0deg, #c62c43 0%, #f55e5d 100%);
   }
@@ -254,8 +282,24 @@
   }
 
   .qr-mobile{
-    margin-top: 30px;
+    margin: 30px 20px 0px 20px;
+  }
+
+  .qr-area{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
     margin-bottom: 10px;
+  }
+
+  .qr-hint{
+    position: absolute;
+    margin-top: 100px;
+    margin-bottom:10px;
+  }
+
+  .single-qr{
+    text-align: center;
   }
 
 </style>
@@ -268,9 +312,7 @@
 
   const config = {
     faucet: 'http://uatfaucet.51nebula.com', //'https://faucet.cybex.io'
-    chain: 'http://18.136.140.223:38090',
-    tutorial: 'https://bbb2019.zendesk.com/hc/zh-cn/articles/360033801811-BBB-%E6%95%99%E7%A8%8B',
-    downloadLink: '', 
+    chain: 'http://18.136.140.223:38090', 
   }
 
   let _keyCachePriv = {};
@@ -335,6 +377,8 @@
       referer: "",
       qrValue: "hello, world",
       qrSize: 100,
+      tutorial: 'https://bbb2019.zendesk.com/hc/zh-cn/articles/360033801811-BBB-%E6%95%99%E7%A8%8B',
+      downloadLink: 'https://app.cybex.io/MobileAPP/BBB_release.apk',
 
       // nameRules: [
       //   value => !!value || validation.account_required,
@@ -367,7 +411,6 @@
       },
       isMobile() {
         const flag= !(this.isiOS() === null && this.isAndroid() === null);
-        console.log("TCL: isMobile -> flag", flag)
         return flag;
       },
       activate(){
@@ -383,8 +426,8 @@
         try {
           // const data = {"method": "call", "params": [0, 'get_full_accounts', [this.name]], "id": 1};
           // const result = await axios.post(config.chain, data);
-          // console.log(result);
-          //
+          // console.log("TCL: result", result)
+          
           // if(result.data.length === 0){
           //   this.isAccountNew = true;
           // }
