@@ -165,6 +165,12 @@
                   详尽指标展示<br />
                   轻松掌握平仓时机
                 </div>
+                <div v-if="this.isMobile() === false">
+                  <qrcode-vue :value="qrValue" :size="qrSize" level="H" class="qr"></qrcode-vue>
+                  <p><b>扫描二维码下载APP</b></p>
+                </div>
+                <div>
+                </div>
               </v-col>
 
               <v-col
@@ -173,6 +179,10 @@
               >
 
                 <img src="/chart.svg" />
+                <div v-if="this.isMobile() === true">
+                  <qrcode-vue :value="qrValue" :size="qrSize" level="H" class="qr-mobile"></qrcode-vue>
+                  <p><b>识别二维码下载APP</b></p>
+                </div>
               </v-col>
 
 
@@ -238,16 +248,29 @@
     background: linear-gradient(0deg, #c62c43 0%, #f55e5d 100%);
   }
 
+  .qr{
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+
+  .qr-mobile{
+    margin-top: 30px;
+    margin-bottom: 10px;
+  }
+
 </style>
 
 <script>
   import { debounce } from "lodash";
   import axios from "axios";
   import PrivateKey from "../ecc/src/PrivateKey";
+  import QrcodeVue from "qrcode.vue";
 
   const config = {
     faucet: 'http://uatfaucet.51nebula.com', //'https://faucet.cybex.io'
-    chain: 'http://18.136.140.223:38090'
+    chain: 'http://18.136.140.223:38090',
+    tutorial: 'https://bbb2019.zendesk.com/hc/zh-cn/articles/360033801811-BBB-%E6%95%99%E7%A8%8B',
+    downloadLink: '', 
   }
 
   let _keyCachePriv = {};
@@ -309,7 +332,9 @@
       password: "",
       repeatpwd: "",
       captcha: "",
-      referer:"",
+      referer: "",
+      qrValue: "hello, world",
+      qrSize: 100,
 
       // nameRules: [
       //   value => !!value || validation.account_required,
@@ -332,6 +357,19 @@
       inRegister: false,
     }),
     methods: {
+      isiOS(){
+        const flag = navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad)/i)
+	      return flag;
+      },
+      isAndroid(){
+        const flag = navigator.userAgent.match(/(Android|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS)/i)
+	      return flag;
+      },
+      isMobile() {
+        const flag= !(this.isiOS() === null && this.isAndroid() === null);
+        console.log("TCL: isMobile -> flag", flag)
+        return flag;
+      },
       activate(){
         zE.activate();
       },
@@ -453,6 +491,7 @@
               "referrer": this.referrer
             }
           });
+          console.log("TCL: createAccount -> result", result)
         } catch (e) {
           if (e.response.data) {
             throw new Error(e.response.data)
@@ -464,6 +503,9 @@
           throw new Error("S.faucet.register")
         }
       }
+    },
+    components:{
+      QrcodeVue,
     },
     computed: {
       nameRules(){
