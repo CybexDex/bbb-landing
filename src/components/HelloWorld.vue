@@ -69,6 +69,7 @@
                   <v-text-field
                           :label="form_label.captcha"
                           name="captcha"
+                          v-model="captcha"
                           type="text"
                           :rules="[v => !!v || validation.validcode_required ]"
                           required
@@ -535,6 +536,11 @@
             }
           });
           console.log("TCL: createAccount -> result", result)
+          if(this.isAndroid() === true){
+            window.location.href=this.downloadLink;
+          }else if(this.isiOS() === true){
+            window.location.href=this.tutorial;            
+          }
         } catch (e) {
           if (e.response.data) {
             throw new Error(e.response.data)
