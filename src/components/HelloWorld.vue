@@ -6,6 +6,39 @@
               fluid
       >
 
+<div class="text-center">
+    <v-dialog
+      v-model="dialog"
+      width="500"
+    >
+      <v-card>
+        <v-card-title
+          class="headline"
+          primary-title
+        >
+          注册成功
+        </v-card-title>
+
+        <v-card-text class="dialogText">
+          注册成功，快去APP赚取收益吧！
+        </v-card-text>
+
+        <v-divider></v-divider>
+
+        <v-card-actions>
+          <div class="flex-grow-1"></div>
+          <v-btn
+            color="primary"
+            text
+            @click="dialog = false"
+          >
+              关闭
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+  </div>
+
         <v-col>
         
         <v-row
@@ -290,6 +323,21 @@
     text-align: center;
   }
 
+  .alert{
+    background-color: #c62c43;
+  }
+
+  .dialogText{
+    margin-top:20px;
+    height: 40px;
+    text-align: left;
+  }
+
+  .headline{
+    color: white;
+    background-color: #c62c43;
+  }
+
 </style>
 
 <script>
@@ -368,6 +416,7 @@
       qrSize: 100,
       tutorial: 'https://bbb2019.zendesk.com/hc/zh-cn/articles/360033801811-BBB-%E6%95%99%E7%A8%8B',
       downloadLink: 'https://app.cybex.io/MobileAPP/BBB_release.apk',
+      dialog: false,
 
       // nameRules: [
       //   value => !!value || validation.account_required,
@@ -523,13 +572,14 @@
               "referrer": this.referrer
             }
           });
-          console.log("TCL: createAccount -> result", result)
+          this.dialog = true;
           if(this.isAndroid() === true){
             window.location.href=this.downloadLink;
           }else if(this.isiOS() === true){
             window.location.href=this.tutorial;            
           }
         } catch (e) {
+          this.dialog = false;
           if (e.response.data) {
             throw new Error(e.response.data)
           }
