@@ -20,7 +20,7 @@
             <v-card class="elevation-5">
               <v-sheet
                       width="100%"
-                      height="200"
+                      height="220"
                       color="primary"
                       dark
                       tile
@@ -177,30 +177,18 @@
               >
 
                 <img src="/chart.svg" />
-                <div v-if="this.isMobile() === true" class="qr-area">
-                  <div>
-                    <qrcode-vue :value="downloadLink" :size="qrSize" level="H" class="qr-mobile"></qrcode-vue>
-                    <span>Android</span>
-                  </div>
-                  <div>
-                    <qrcode-vue :value="tutorial" :size="qrSize" level="H" class="qr-mobile"></qrcode-vue>
-                    <span>iOS</span>  
-                  </div>
-                  <p><b>识别二维码下载APP</b></p>
-                </div>
+
 
               </v-col>
             </v-row>
           </v-col>
         </v-row>
         
-        
-        
           <v-row 
             align="center"
             justify="center"
             >
-            <div v-if="this.isMobile() === false" class="qr-area">
+            <div  class="qr-area">
                   <div class="single-qr">
                     <qrcode-vue :value="downloadLink" :size="qrSize" level="H" class="qr-mobile"></qrcode-vue>
                     <span>Android</span>
@@ -210,7 +198,7 @@
                     <span>iOS</span>  
                   </div>
                 </div>
-            <p class="qr-hint" v-if="this.isMobile() === false"><b>扫描二维码下载APP</b></p>    
+            <p class="qr-hint" ><b>扫描二维码下载APP</b></p>    
           </v-row>
 
         </v-col>
@@ -312,7 +300,8 @@
   import QrcodeVue from "qrcode.vue";
 
   const config = {
-    faucet: 'http://uatfaucet.51nebula.com', //'https://faucet.cybex.io'
+    // faucet: 'http://uatfaucet.51nebula.com',
+    faucet: 'https://faucet.cybex.io',
     chain: 'http://18.136.140.223:38090', 
   }
 
