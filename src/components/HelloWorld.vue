@@ -104,7 +104,6 @@
               <v-card-actions class="pa-5">
                 <v-spacer></v-spacer>
                 <v-btn
-                        :disabled = !isAccountValid
                         color="primary"
                         block
                         @click="createAccount"
@@ -414,19 +413,19 @@
         this.isAccountChecked = false;
         this.name = (this.name || "").slice(0, 64);
         try {
-          // const data = {"method": "call", "params": [0, 'get_full_accounts', [this.name]], "id": 1};
-          // const result = await axios.post(config.chain, data);
-          // console.log("TCL: result", result)
+          const data = {"method": "call", "params": [0, 'get_full_accounts', [this.name]], "id": 1};
+          const result = await axios.post(config.chain, data);
+          console.log("TCL: result", result)
           
-          // if(result.data.length === 0){
-          //   this.isAccountNew = true;
-          // }
-          this.isAccountNew = true;
-          this.isAccountChecked = true;
+          if(result.data.length === 0){
+            this.isAccountNew = true;
+          }
+          // this.isAccountNew = true;
+          // this.isAccountChecked = true;
           // this.$refs.form.validate();
         } catch (e) {
-          this.isAccountNew = true;
-          this.isAccountChecked = true;
+          // this.isAccountNew = true;
+          // this.isAccountChecked = true;
           // this.$refs.form.validate();
         }
       }, 200),
