@@ -116,6 +116,7 @@
                   </v-text-field>
 
                   <v-text-field
+                          :disabled="!refererDisabled"
                           id="refer"
                           v-model="referer"
                           :label="form_label.refer"
@@ -417,6 +418,7 @@
       tutorial: 'https://bbb2019.zendesk.com/hc/zh-cn/articles/360033801811-BBB-%E6%95%99%E7%A8%8B',
       downloadLink: 'https://app.cybex.io/MobileAPP/BBB_release.apk',
       dialog: false,
+      refererDisabled: false,
 
       // nameRules: [
       //   value => !!value || validation.account_required,
@@ -613,6 +615,9 @@
       const url_string = window.location.href;
       const url = new URL(url_string);
       this.referer = url.searchParams.get("id");
+      if(this.referrer !== ""){
+        this.refererDisabled = true;
+      }
       await this.refreshCaptcha();
     }
   }
