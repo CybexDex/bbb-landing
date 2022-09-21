@@ -21,7 +21,7 @@
     "lodash": "^4.17.14",
     "qrcode.vue": "^1.6.3",
     "vue": "^2.6.10",
-    "vuetify": "^2.0.0"
+    "vuetify": "^2.6.10"
   },
   "devDependencies": {
     "@mdi/font": "^4.1.95",
